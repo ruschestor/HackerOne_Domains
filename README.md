@@ -20,11 +20,16 @@ Source - JSON from https://github.com/arkadiyt/bounty-targets-data
   * 'statistics' - get only statistics
 * **bounties** - filter company by "offers_bounties" option in account
   * 'yes' (default value) - get companies that offer bounties
-  * <any other> - get all companies
-* swag = 'no' - Filter company by "offers_swag" option in account
-* number = 0
-* start = 0
-* c_limit = 0 - Limit number of first companies
+  * 'no' - get all companies
+* **swag** - filter company by "offers_swag" option in account
+  * 'yes' - get companies that offer swag
+  * 'no' (default value) - get all companies
+* **number** - how many domains should be in total
+  * 0 (default value) - get all domains
+* **start** - offset from number of domains
+  * 0 (default value) - start from 0
+* **c_limit** - Limit number of first companies (e.g. for test)
+  * 0 (default value) - get all companies
 
 #### Temporary files
 The module saves temporary files in "C:/temp/HackerOne_Domains/":
@@ -37,7 +42,8 @@ The module saves temporary files in "C:/temp/HackerOne_Domains/":
 ```
 import HackerOne_Domains as HOD
 ```
-#### Get full list (default)
+#### Get list of domains with bounty offer (default state)
+mode = 'default', bounties = 'yes', swag = 'no', number = 0, start = 0, c_limit = 0
 ```
 domains = HOD.getdomainlist()
 ```
@@ -47,11 +53,11 @@ domains = HOD.getdomainlist(mode = 'wildcard')
 ```
 #### Get only statistics
 ```
-domains = HOD.getdomainlist(mode = 'statistics')
+stat = HOD.getdomainlist(mode = 'statistics')
 ```
-#### Get only statistics
+#### Get full list of domains (even without bounty and swag)
 ```
-domains = HOD.getdomainlist(mode = 'statistics')
+domains = HOD.getdomainlist(bounties = 'no')
 ```
 ### To-do
 * [x] Exclude iOS & Android links
