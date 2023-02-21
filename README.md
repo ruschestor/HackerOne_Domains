@@ -70,8 +70,6 @@ domains = HOD.getdomainlist(bounties = 'no')
 * [x] Consider "offers_bounties" & "offers_swag"
 * [x] Exclude IP addresses
 * [x] Check top level domain
-* [ ] Source - URL or file
-* [ ] Check JSON
 * [ ] Improve statistics
 * [ ] Domain validation in DNS
 * [ ] Support Linux
