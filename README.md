@@ -12,30 +12,36 @@ Source - JSON from https://github.com/arkadiyt/bounty-targets-data
 * Exclude domains with blocked characters
 * Exclude repositories domains (github.com, gitlab.com)
 * Exclude duplicates
+* Searching additional subdomains (if wildcard is specified) in certificate and links of website
 
 #### Options
-* **mode**
-  * 'default' (default value) - get full domain list
-  * 'wildcard' - get only wildcard domains
-  * 'statistics' - get only statistics
 * **bounties** - filter company by "offers_bounties" option in account
   * 'yes' (default value) - get companies that offer bounties
   * 'no' - get all companies
 * **swag** - filter company by "offers_swag" option in account
   * 'yes' - get companies that offer swag
   * 'no' (default value) - get all companies
-* **number** - how many domains should be in total
-  * 0 (default value) - get all domains
-* **start** - offset from number of domains
-  * 0 (default value) - start from 0
-* **c_limit** - Limit number of first companies (e.g. for test)
+* **number** - (Limit mode) how many companies should be in total
   * 0 (default value) - get all companies
+* **start** - (Limit mode) offset from number of companies
+  * 0 (default value) - start from 0
+* **test** - (Test mode) limit number of first companies (e.g. for test)
+  * 0 (default value) - get all companies
+* **wildcardresolver** - additional function to searching for subdomains.
+  * 'yes' (default value) - enable
+  * 'no' - disable
+* **log** - save result, verbose log and statistics to files.
+  * 'yes' - enable
+  * 'no' (default value) - disable
 
 #### Temporary files
 The module saves temporary files in "C:/temp/HackerOne_Domains/":
 * "HackerOne_Domains_YYYY-MM-DD.json" - Source JSON file.
 * "IANA_TLDS_YYYY-MM.txt" - Official list of Top Level Domains.
-* "results.txt" - Result of last run.
+* "last_domains_main.txt" - List of resulted domains of the last session.
+* "last_domains_wildcard.txt" - List of wildcard domains of the last session.
+* "last_verbose_log.txt" - Detailed log of the last session.
+* "wildcard_cache.txt" - Cache of the Wildcard Resolver function. To avoid frequent requests to websites. Just delete it to flush.
 
 ### How to use
 #### Import module
@@ -43,17 +49,13 @@ The module saves temporary files in "C:/temp/HackerOne_Domains/":
 import HackerOne_Domains as HOD
 ```
 #### Get list of domains with bounty offer (default state)
-mode = 'default', bounties = 'yes', swag = 'no', number = 0, start = 0, c_limit = 0
+bounties = 'yes', swag = 'no', number = 0, start = 0, test = 0, wildcardresolver = 'yes', log = 'no'
 ```
 domains = HOD.getdomainlist()
 ```
-#### Get list of wildcard domains
+#### Test on 10 companies
 ```
-domains = HOD.getdomainlist(mode = 'wildcard')
-```
-#### Get only statistics
-```
-stat = HOD.getdomainlist(mode = 'statistics')
+domains = HOD.getdomainlist(log = 'yes', test = 10)
 ```
 #### Get full list of domains (even without bounty and swag)
 ```
@@ -70,9 +72,12 @@ domains = HOD.getdomainlist(bounties = 'no')
 * [x] Consider "offers_bounties" & "offers_swag"
 * [x] Exclude IP addresses
 * [x] Check top level domain
-* [ ] Improve statistics
-* [ ] Domain validation in DNS
-* [ ] Support Linux
-* [ ] Improve start/number feature
-* [ ] Wildcard domains: certificates
+* [x] Improve statistics
+* [x] Improve start/number feature
+* [x] Wildcard domains: certificates
 ### Changelog
+## v1.1:
+* Parameter "c_limit" of the "getdomainlist" function renamed to "test".
+* Improved logging: single parameter "log" for 3 files.
+* Improved "Test" and "Limit" modes.
+* Added function (parameter "wildcardresolver") Wildcard Resolver to find additional subdomains by parsing website links and certificate (Subject Alternate Name).
