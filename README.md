@@ -81,3 +81,7 @@ domains = HOD.getdomainlist(bounties = 'no')
 * Improved logging: single parameter "log" for 3 files.
 * Improved "Test" and "Limit" modes.
 * Added function (parameter "wildcardresolver") Wildcard Resolver to find additional subdomains by parsing website links and certificate (Subject Alternate Name).
+## v1.2:
+* Fixed issue "cryptography.x509.extensions.ExtensionNotFound: No <class 'cryptography.x509.extensions.SubjectAlternativeName'> extension was found".
+* Fixed a few minor issues
+* Improved statistics
