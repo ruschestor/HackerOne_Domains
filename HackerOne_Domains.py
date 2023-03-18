@@ -1,11 +1,11 @@
 ### MAIN ###
-# Name: 		HackerOne_Domains
-# Description:	Python module for getting a list of domains from HackerOne platform.
-# Version: 		1.1 | Date: 11.03.2023
-# GitHub: 		https://github.com/ruschestor/HackerOne_Domains
+# Name: 			HackerOne_Domains
+# Description:		Python module for getting a list of domains from HackerOne platform.
+# Version: 			1.2 | Date: 19.03.2023
+# GitHub: 			https://github.com/ruschestor/HackerOne_Domains
 
 ### TESTED ENVIRONMENT ###
-# Windows 10 Enterprise 2016 LTSB 1607 | Python 3.10.4 | Pip 22.0.4 | wget 3.2 | urllib3 1.26.7 | bs4 0.0.1 | cryptography 36.0.1
+# Windows 10 | Python 3.10.4 | Pip 22.0.4 | wget 3.2 | urllib3 1.26.7 | bs4 0.0.1 | cryptography 36.0.1
 
 ### VARIABLES LEGEND ###
 # g_ - GLOBAL variables
@@ -34,8 +34,8 @@ g_protocols = ["https://","http://","ftp://"]
 
 ### FILES ###
 f_temp_file_folder = "C:/temp/HackerOne_Domains/"
-f_temp_file = f_temp_file_folder + "/HackerOne_Domains_" + str(datetime.now().strftime("%Y-%m-%d")) + ".json"			# Once per day
-f_temp_file_top_level_domains = f_temp_file_folder + "/IANA_TLDS_" + str(datetime.now().strftime("%Y-%m")) + ".txt"		# Once per month
+f_temp_file = f_temp_file_folder + "HackerOne_Domains_" + str(datetime.now().strftime("%Y-%m-%d")) + ".json"			# Once per day
+f_temp_file_top_level_domains = f_temp_file_folder + "IANA_TLDS_" + str(datetime.now().strftime("%Y-%m")) + ".txt"		# Once per month
 f_last_domainlist = f_temp_file_folder + "last_domains_main.txt"
 f_last_wildcard = f_temp_file_folder + "last_domains_wildcard.txt"
 f_last_log = f_temp_file_folder + "last_verbose_log.txt"
@@ -58,8 +58,11 @@ def wcr(domain = ''):
 	except:
 		return None
 	else:
-		origin_loaded_cert = x509.load_pem_x509_certificate(origin_certificate, default_backend())
-		san = (origin_loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)).value.get_values_for_type(x509.DNSName)
+		try:
+			origin_loaded_cert = x509.load_pem_x509_certificate(origin_certificate, default_backend())
+			san = (origin_loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)).value.get_values_for_type(x509.DNSName)
+		except:
+			pass
 
 	if "www." not in domain:
 		www_domain = "www." + domain
@@ -68,11 +71,14 @@ def wcr(domain = ''):
 		except:
 			pass
 		else:
-			www_loaded_cert = x509.load_pem_x509_certificate(www_certificate, default_backend())
-			www_san = (www_loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)).value.get_values_for_type(x509.DNSName)
-			san = san + www_san
+			try:
+				www_loaded_cert = x509.load_pem_x509_certificate(www_certificate, default_backend())
+				www_san = (www_loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)).value.get_values_for_type(x509.DNSName)
+				san = san + www_san
+			except:
+				pass
 
-	# Проверка на валидность
+	# Validity check
 	for i in san:
 		# Remove wildcard to exclude loop
 		if "*" in i:
@@ -125,6 +131,7 @@ def getdomainlist(bounties = 'yes', swag = 'no', number = 0, start = 0, test = 0
 
 	s_number_scope = 0
 	s_number_scope_companies = 0
+	s_number_added_wcd = 0
 	g_target_domains = []
 	g_wildcard_domains = []
 	g_TLDS = []
@@ -295,6 +302,7 @@ def getdomainlist(bounties = 'yes', swag = 'no', number = 0, start = 0, test = 0
 
 				if (wcr_result_ext != []) and (wcr_result_ext != None):
 					g_target_domains += wcr_result_ext
+					s_number_added_wcd += len(wcr_result_ext)
 
 			g_target_domains.append(t_json_raw_domain.strip().lower())
 
@@ -318,6 +326,7 @@ def getdomainlist(bounties = 'yes', swag = 'no', number = 0, start = 0, test = 0
 		log_verbose += "Number of in-scope objects: " + str(s_number_scope) + "\n"
 		log_verbose += "Number of real in-scope domains: " + str(len(g_target_domains)) + "\n"
 		log_verbose += "Number of wildcard domains: " + str(len(g_wildcard_domains)) + "\n"
+		log_verbose += "Number of founded subdomains: " + str(s_number_added_wcd) + "\n"
 		with open(f_last_log,"w", encoding="utf-8") as t_file:
 			t_file.write(log_verbose)
 
